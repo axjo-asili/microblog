@@ -1,0 +1,35 @@
+FROM python:3.8-alpine
+RUN adduser -D microblog
+
+WORKDIR /home/microblog
+
+COPY app app
+COPY migrations migrations
+COPY requirements requirements
+COPY requirements.txt microblog.py boot.sh ./
+
+RUN export DOCKER_BUILDKIT=1 && export COMPOSE_DOCKER_CLI_BUILD=1
+
+# Install required system dependencies
+RUN apk add --no-cache \
+    build-base \
+    gcc \
+    libffi-dev \
+    musl-dev \
+    python3-dev \
+    py3-pip
+
+# Upgrade pip and install wheel for smoother installations
+RUN pip install --upgrade pip wheel
+
+RUN python -m venv .venv && \
+	.venv/bin/pip3 install -r requirements.txt && \
+	chmod +x boot.sh && \
+	chown -R microblog:microblog ./
+
+ENV FLASK_APP microblog.py
+
+USER microblog
+
+EXPOSE 5000
+ENTRYPOINT ["./boot.sh"]
