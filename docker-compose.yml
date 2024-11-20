@@ -1,0 +1,44 @@
+services:
+  mysql:
+    image: mysql:8.0
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: root_password
+    networks:
+      microblog:
+        ipv4_address: 192.168.1.100
+    restart: "always"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./my.cnf:/etc/mysql/my.cnf
+
+  prod:
+    container_name: "microblog-server"
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_prod
+    ports:
+      - 8000:5000
+    depends_on:
+      - mysql
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DATABASE_URL: ${DATABASE_URL}
+    networks:
+      microblog:
+        ipv4_address: 192.168.1.101
+    restart: "always"
+
+networks:
+  microblog:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
+
+volumes:
+  db_data:
