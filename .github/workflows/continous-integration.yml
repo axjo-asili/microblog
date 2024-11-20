@@ -1,4 +1,4 @@
-name: Continous Integration
+name: CI - Validation, Unit & Integration tests
 
 on:
   push:
@@ -21,8 +21,25 @@ jobs:
           python -m venv .venv
           .venv/bin/pip3 install -r requirements/test.txt
           sudo apt-get update
-          sudo apt-get install -y make
 
-      - name: Run Tests
+      - name: Validate
         run: |
-          make test
+          pylint --rcfile=.pylintrc app tests
+  
+      - name: Run Unit test
+        run: |
+          -m coverage run --rcfile=.coveragerc
+		      -m pytest -c pytest.ini tests/unit
+
+      - name: Run Integration tests
+        run: |
+        		-m coverage run --rcfile=.coveragerc \
+		        -m pytest -c pytest.ini tests/integration
+
+
+
+
+
+
+
+        
