@@ -18,23 +18,23 @@ jobs:
 
       - name: Set up dependencies
         run: |
-          python -m venv .venv
-          .venv/bin/pip3 install -r requirements/test.txt
-          sudo apt-get update
+         	 python -m venv .venv
+         	 .venv/bin/pip3 install -r requirements/test.txt
+         	 sudo apt-get update
 
       - name: Validate
         run: |
-          pylint --rcfile=.pylintrc app tests
+         	 pylint --rcfile=.pylintrc app tests
   
       - name: Run Unit test
         run: |
-          -m coverage run --rcfile=.coveragerc
-		      -m pytest -c pytest.ini tests/unit
+          	-m coverage run --rcfile=.coveragerc
+	  	-m pytest -c pytest.ini tests/unit
 
       - name: Run Integration tests
         run: |
-        		-m coverage run --rcfile=.coveragerc \
-		        -m pytest -c pytest.ini tests/integration
+		-m coverage run --rcfile=.coveragerc \
+		-m pytest -c pytest.ini tests/integration
 
 
 
