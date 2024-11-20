@@ -1,0 +1,21 @@
+FROM python:3.8-alpine
+
+WORKDIR /home/microblog
+
+# copy script, reqs. & dependencies
+COPY tests.sh ./
+COPY requirements requirements/
+COPY Makefile .
+COPY .pylintrc .
+COPY pytest.ini .
+
+# install reqs. "make" & add exec permission for script
+RUN <<-EOF
+    python -m venv .venv
+    .venv/bin/pip3 install -r requirements/test.txt
+    apk add --no-cache make
+    chmod +x tests.sh
+EOF
+
+# script runs "make test"
+ENTRYPOINT ["./tests.sh"]

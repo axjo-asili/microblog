@@ -1,4 +1,12 @@
 services:
+  test:
+      container_name: "test"
+      image: axjo21/microblog-tests:1.0.0-tests
+      volumes:
+        - ./app:/home/microblog/app
+        - ./tests:/home/microblog/tests
+      restart: no
+
   mysql:
     image: mysql:8.0
     ports:
