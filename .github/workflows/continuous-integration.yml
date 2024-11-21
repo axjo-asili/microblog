@@ -1,12 +1,12 @@
-name: CI
+name: Continuous Integration
 
 on:
   push:
     branches:
-      - '**'
+      - master
   pull_request:
     branches:
-      - '**'
+      - master
 jobs:
   run-test-container:
     runs-on: ubuntu-latest
@@ -23,11 +23,14 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Pull test container image
-        run: docker pull ${{ secrets.DOCKER_USERNAME }}/microblog-tests:1.0.0-tests
+        run: docker pull axjo21/microblog-tests:1.0.0-tests
 
       - name: Run the container
         run: |
           docker run --rm \
             -v ${{ github.workspace }}/app:/home/microblog/app \
             -v ${{ github.workspace }}/tests:/home/microblog/tests \
-            ${{ secrets.DOCKER_USERNAME }}/microblog-tests:1.0.0-tests
+            axjo21/microblog-tests:1.0.0-tests
+      - name: Debug Success
+        run: echo "Workflow 1 completed successfully."
+

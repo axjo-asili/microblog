@@ -1,18 +1,15 @@
-name: CD - Build and push docker images to DockerHub
+name: Continuous Delivery
 
 on:
     workflow_run:
-        workflows:
-        - CI
+        workflows: [Continuous Integration]
         types:
-        - completed
-    push:
+            - completed
         branches: [ master ]
-    pull_request:
-        branches: [ master ]
-
+            
 jobs:
-    deploy:
+    # Build and push docker images to DockerHub
+    build-and-push:
         runs-on: ubuntu-latest
         if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
