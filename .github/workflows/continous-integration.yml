@@ -1,4 +1,4 @@
-name: CI - Validation, Unit & Integration tests
+name: CI
 
 on:
   push:
@@ -7,39 +7,26 @@ on:
   pull_request:
     branches:
       - '**'
-
 jobs:
-  test:
+  run-test-container:
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up dependencies
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Pull test container image
+        run: docker pull ${{ secrets.DOCKER_USERNAME }}/microblog-tests:1.0.0-tests
+
+      - name: Run the container
         run: |
-          python -m venv .venv
-          .venv/bin/pip3 install pylint
-          .venv/bin/pip3 install -r requirements/test.txt
-
-      - name: Validate
-        run: |
-          pylint --rcfile=.pylintrc app tests
-  
-      - name: Run Unit test
-        run: |
-          -m coverage run --rcfile=.coveragerc \
-          -m pytest -c pytest.ini tests/unit
-
-      - name: Run Integration tests
-        run: |
-          -m coverage run --rcfile=.coveragerc \
-          -m pytest -c pytest.ini tests/integration
-
-
-
-
-
-
-
-        
+          docker run --rm \
+            -v ${{ github.workspace }}/app:/home/microblog/app \
+            -v ${{ github.workspace }}/tests:/home/microblog/tests \
+            ${{ secrets.DOCKER_USERNAME }}/microblog-tests:1.0.0-tests
