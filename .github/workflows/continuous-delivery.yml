@@ -27,6 +27,7 @@ jobs:
               run: |
                 docker compose build
                 docker tag microblog-prod:latest ${{ secrets.DOCKER_USERNAME }}/microblog-prod:${{ github.sha }}
+                docker tag microblog-prod:latest ${{ secrets.DOCKER_USERNAME }}/microblog-prod:latest
             - name: Push Docker image
               run: |
                 docker push ${{ secrets.DOCKER_USERNAME }}/microblog-prod:${{ github.sha }}
