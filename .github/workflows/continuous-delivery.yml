@@ -31,3 +31,4 @@ jobs:
             - name: Push Docker image
               run: |
                 docker push ${{ secrets.DOCKER_USERNAME }}/microblog-prod:${{ github.sha }}
+                docker push ${{ secrets.DOCKER_USERNAME }}/microblog-prod:latest

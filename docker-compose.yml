@@ -8,21 +8,20 @@ services:
       restart: no
 
   mysql:
-    image: mysql:8.0
+    image: mysql/mysql-server:5.7
     ports:
       - 3306:3306
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_RANDOM_ROOT_PASSWORD: yes
     networks:
       microblog:
         ipv4_address: 192.168.1.100
     restart: "always"
     volumes:
       - db_data:/var/lib/mysql
-      - ./my.cnf:/etc/mysql/my.cnf
 
   prod:
     container_name: "microblog-server"
