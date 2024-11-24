@@ -11,9 +11,11 @@ jobs:
     # Build and push docker images to DockerHub
     build-and-push:
         runs-on: ubuntu-latest
-        if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'release' }}
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
         steps:
+            - name: Debug Event Context
+              run: echo "${{ toJson(github.event.workflow_run) }}"
             - name: Checkout code
               uses: actions/checkout@v3
 
