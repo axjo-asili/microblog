@@ -14,6 +14,11 @@ jobs:
         if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
         steps:
+            - name: Debug Event Context
+              run: |
+                echo "Workflow run ID: ${{ github.event.workflow_run.id }}"
+                echo "Tag name from outputs: ${{ github.event.workflow_run.outputs.tag_name }}"
+
             - name: Extract tag_name from triggering workflow
               run: echo ${{ github.event.workflow_run.outputs.tag_name }}
 
