@@ -28,9 +28,9 @@ jobs:
             - name: Build Docker image
               run: |
                 docker compose build
-                docker tag microblog-prod:latest ${{ secrets.DOCKER_USERNAME }}/microblog-prod:${{ github.event.workflow_run.head_branch }}
+                docker tag microblog-prod:latest ${{ secrets.DOCKER_USERNAME }}/microblog-prod:${{ github.event.release.tag_name }}
                 docker tag microblog-prod:latest ${{ secrets.DOCKER_USERNAME }}/microblog-prod:latest
             - name: Push Docker image
               run: |
-                docker push ${{ secrets.DOCKER_USERNAME }}/microblog-prod:${{ github.event.workflow_run.head_branch }}
+                docker push ${{ secrets.DOCKER_USERNAME }}/microblog-prod:${{ github.event.release.tag_name }}
                 docker push ${{ secrets.DOCKER_USERNAME }}/microblog-prod:latest
