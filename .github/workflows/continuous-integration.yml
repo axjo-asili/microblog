@@ -2,16 +2,11 @@ name: Continuous Integration
 
 on:
   push:
-    tags:
-      - '*'
     branches:
       - master
   pull_request:
     branches:
       - master
-  release:
-    types: [published]
-
 jobs:
   run-test-container:
     runs-on: ubuntu-latest
@@ -20,27 +15,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Get tag name
+      # login to docker using secret variables
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Pull test container image
+        run: docker pull axjo21/microblog-tests:1.0.0-tests
+
+      - name: Run the container
         run: |
-          TAG_NAME="${GITHUB_REF#refs/tags/}"
-          echo "Release tag is $TAG_NAME"
-
-      # # login to docker using secret variables
-      # - name: Log in to Docker Hub
-      #   uses: docker/login-action@v3
-      #   with:
-      #     username: ${{ secrets.DOCKER_USERNAME }}
-      #     password: ${{ secrets.DOCKER_TOKEN }}
-
-      # - name: Pull test container image
-      #   run: docker pull axjo21/microblog-tests:1.0.0-tests
-
-      # - name: Run the container
-      #   run: |
-      #     docker run --rm \
-      #       -v ${{ github.workspace }}/app:/home/microblog/app \
-      #       -v ${{ github.workspace }}/tests:/home/microblog/tests \
-      #       axjo21/microblog-tests:1.0.0-tests
-      # - name: Debug Success
-      #   run: echo "Workflow 1 completed successfully."
+          docker run --rm \
+            -v ${{ github.workspace }}/app:/home/microblog/app \
+            -v ${{ github.workspace }}/tests:/home/microblog/tests \
+            axjo21/microblog-tests:1.0.0-tests
+      - name: Debug Success
+        run: echo "Workflow 1 completed successfully."
 

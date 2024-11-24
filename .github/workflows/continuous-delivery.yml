@@ -1,27 +1,26 @@
 name: Continuous Delivery
 
+# on:
+#     workflow_run:
+#         workflows: [Continuous Integration]
+#         types:
+#             - completed
+#         branches: [ master ]
+
 on:
-    workflow_run:
-        workflows: [Continuous Integration]
-        types:
-            - completed
-        # branches: [ master ]
+  release:
+    types:
+      - published
             
 jobs:
     # Build and push docker images to DockerHub
     build-and-push:
         runs-on: ubuntu-latest
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        # if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
         steps:
-            - name: Debug Event Context
-              run: |
-                echo "Workflow run ID: ${{ github.event.workflow_run.id }}"
-                echo "Tag name from outputs: ${{ github.event.workflow_run.outputs.tag_name }}"
-
-            - name: Extract tag_name from triggering workflow
-              run: echo ${{ github.event.workflow_run.outputs.tag_name }}
-
+          - name: release tag name
+            run: echo ${{ github.event.release.tag_name }}
             # - name: Checkout code
             #   uses: actions/checkout@v3
 
@@ -34,9 +33,9 @@ jobs:
             # - name: Build Docker image
             #   run: |
             #     docker compose build
-            #     docker tag microblog-prod:latest ${{ secrets.DOCKER_USERNAME }}/microblog-prod:${{ github.event.release.tag_name }}
+            #     docker tag microblog-prod:latest ${{ secrets.DOCKER_USERNAME }}/microblog-prod:${{ github.sha }}
             #     docker tag microblog-prod:latest ${{ secrets.DOCKER_USERNAME }}/microblog-prod:latest
             # - name: Push Docker image
             #   run: |
-            #     docker push ${{ secrets.DOCKER_USERNAME }}/microblog-prod:${{ github.event.release.tag_name }}
+            #     docker push ${{ secrets.DOCKER_USERNAME }}/microblog-prod:${{ github.sha }}
             #     docker push ${{ secrets.DOCKER_USERNAME }}/microblog-prod:latest
