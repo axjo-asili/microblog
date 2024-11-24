@@ -14,9 +14,17 @@ jobs:
   run-test-container:
     runs-on: ubuntu-latest
 
+    outputs:
+      tag_name: ${{ steps.get_tag.outputs.tag_name }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Get release tag
+        id: get_tag
+        if: ${{ github.event_name == 'release' }}
+        run: echo "::set-output name=tag_name::${{ github.event.release.tag_name }}"
 
       # login to docker using secret variables
       - name: Log in to Docker Hub
