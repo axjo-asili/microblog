@@ -11,7 +11,7 @@ jobs:
     # Build and push docker images to DockerHub
     build-and-push:
         runs-on: ubuntu-latest
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        if: ${{ github.event.workflow_run.conclusion == 'success' && startsWith(github.ref, 'refs/tags/') }}
 
         steps:
             - name: Checkout code
@@ -26,9 +26,9 @@ jobs:
             - name: Build Docker image
               run: |
                 docker compose build
-                docker tag microblog-prod:latest ${{ secrets.DOCKER_USERNAME }}/microblog-prod:${{ github.sha }}
+                docker tag microblog-prod:latest ${{ secrets.DOCKER_USERNAME }}/microblog-prod:${{ github.ref_name }}
                 docker tag microblog-prod:latest ${{ secrets.DOCKER_USERNAME }}/microblog-prod:latest
             - name: Push Docker image
               run: |
-                docker push ${{ secrets.DOCKER_USERNAME }}/microblog-prod:${{ github.sha }}
+                docker push ${{ secrets.DOCKER_USERNAME }}/microblog-prod:${{ github.ref_name }}
                 docker push ${{ secrets.DOCKER_USERNAME }}/microblog-prod:latest
