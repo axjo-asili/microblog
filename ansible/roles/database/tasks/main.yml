@@ -1,0 +1,40 @@
+- name: Stop and remove existing MySQL container (if exists)
+  community.docker.docker_container:
+    name: mysql
+    state: absent
+  ignore_errors: true
+
+- name: Remove MySQL Docker volume (clean start)
+  community.docker.docker_volume:
+    name: mysql_data
+    state: absent
+  ignore_errors: true  # In case it doesn't exist
+
+- name: Create fresh MySQL volume
+  community.docker.docker_volume:
+    name: mysql_data
+    state: present
+
+- name: Prune unused Docker volumes (extra cleanup)
+  ansible.builtin.command: "docker volume prune -f"
+  become: true
+
+- name: Create fresh MySQL volume
+  community.docker.docker_volume:
+    name: mysql_data
+    state: present
+
+- name: Run MySQL container
+  community.docker.docker_container:
+    name: mysql
+    image: mysql:8.3
+    env:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: "{{ mysql_db }}"
+      MYSQL_USER: "{{ mysql_user }}"
+      MYSQL_PASSWORD: "{{ mysql_password }}"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart_policy: always

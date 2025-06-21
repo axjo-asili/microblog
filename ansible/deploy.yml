@@ -1,0 +1,44 @@
+---
+- name: Re-add hosts with 'deploy' user after it's been created
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Set SSH access for deploy user
+      add_host:
+        name: "{{ item.tags.PublicIP }}"
+        groups:
+          - "{{ item.name[0:-3] }}"
+          - "{{ item.tags.Type }}"
+          - devops
+        ansible_user: deploy
+        ansible_ssh_private_key_file: "~/.ssh/microblog_azure"
+      with_items: "{{ az_facts.vms }}"
+      when: item.tags.PublicIP is defined and item.power_state == 'running'
+
+- name: Install Docker on all servers
+  hosts: "!localhost:all"
+  become: yes
+  become_method: sudo
+  roles:
+    - docker_install
+
+- name: Deploy database
+  hosts: database
+  become: yes
+  become_method: sudo
+  roles:
+    - database
+
+- name: Deploy application
+  hosts: appserver
+  become: yes
+  become_method: sudo
+  roles:
+    - appserver
+
+- name: Deploy load balancer
+  hosts: loadbalancer
+  become: yes
+  become_method: sudo
+  roles:
+    - loadbalancer

@@ -1,0 +1,17 @@
+- name: Wait for MySQL to be ready
+  wait_for:
+    host: "{{ groups['database'][0] }}"
+    port: 3306
+    delay: 5
+    timeout: 60
+
+- name: Run microblog app container
+  community.docker.docker_container:
+    name: microblog-server
+    image: axjo21/microblog-prod:latest
+    env:
+      SECRET_KEY: "{{ secret_key }}"
+      DATABASE_URL: "mysql+pymysql://{{ mysql_user }}:{{ mysql_password }}@{{ groups['database'][0] }}/{{ mysql_db }}"
+    ports:
+      - "8000:5000"
+    restart_policy: always

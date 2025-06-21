@@ -7,6 +7,7 @@
         rules: "{{ group.port_rules }}"
         tags: "{{ vmtags }}"
         state: "{{ state }}"
+        auth_source: cli
     loop: "{{ sg_groups }}"
     loop_control: 
         loop_var: group

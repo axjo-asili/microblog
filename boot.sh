@@ -13,3 +13,6 @@ done
 
 # flask db upgrade
 exec gunicorn -b :5000 --access-logfile - --error-logfile - microblog:app
+
+# Config supervisor
+source scripts/deploy-app/4.supervisor.sh
