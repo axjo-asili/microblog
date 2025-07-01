@@ -11,34 +11,43 @@
           - "{{ item.tags.Type }}"
           - devops
         ansible_user: deploy
+        ansible_host: "{{ item.tags.PublicIP }}"
         ansible_ssh_private_key_file: "~/.ssh/microblog_azure"
       with_items: "{{ az_facts.vms }}"
       when: item.tags.PublicIP is defined and item.power_state == 'running'
 
 - name: Install Docker on all servers
   hosts: "!localhost:all"
-  become: yes
+  become: true
   become_method: sudo
   roles:
     - docker_install
 
 - name: Deploy database
   hosts: database
-  become: yes
+  become: true
   become_method: sudo
   roles:
     - database
 
 - name: Deploy application
   hosts: appserver
-  become: yes
+  become: true
   become_method: sudo
   roles:
     - appserver
 
 - name: Deploy load balancer
   hosts: loadbalancer
-  become: yes
+  become: true
   become_method: sudo
+  vars:
+    domain_name: ahmadasili.tech
+    admin_email: ahai22@student.bth.se
+    all_certbot_domains:
+      - ahmadasili.tech
+      - www.ahmadasili.tech
+      - appserver1.ahmadasili.tech
+      - appserver2.ahmadasili.tech
   roles:
     - loadbalancer

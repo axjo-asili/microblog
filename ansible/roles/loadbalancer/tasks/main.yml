@@ -1,17 +1,81 @@
-- name: Install Nginx
+---
+- name: Uninstall pip versions of certbot and related libraries
+  pip:
+    name:
+      - certbot
+      - certbot-nginx
+      - urllib3
+      - requests_toolbelt
+    state: absent
+    executable: pip3
+
+- name: Ensure Nginx is installed
   apt:
     name: nginx
-    update_cache: true
     state: present
+    update_cache: true
 
-- name: Configure Nginx reverse proxy
+- name: Create Certbot webroot directory
+  file:
+    path: /var/www/certbot/.well-known/acme-challenge
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Debug domain list (optional)
+  debug:
+    var: all_certbot_domains
+
+- name: Deploy temporary Nginx config (HTTP only, for ACME)
   template:
-    src: nginx.conf.j2
+    src: nginx-http-only.conf.j2
     dest: /etc/nginx/sites-available/default
   notify: Restart Nginx
 
-- name: Ensure Nginx is running
-  systemd:
+- name: Ensure Nginx is started and enabled
+  service:
     name: nginx
     state: started
     enabled: true
+
+- name: Force Nginx restart so ACME challenge is live
+  meta: flush_handlers
+
+- name: Install Certbot
+  apt:
+    name:
+      - certbot
+      - python3-certbot-nginx
+    state: present
+    update_cache: true
+
+- name: Run Certbot to obtain certs
+  command: >
+    certbot certonly --webroot -w /var/www/certbot
+    --email {{ admin_email }} --agree-tos --non-interactive
+    {% for domain in all_certbot_domains %} -d {{ domain }}{% endfor %}
+  register: certbot_result
+  failed_when: certbot_result.rc != 0 and 'Certificate not yet due for renewal' not in certbot_result.stdout
+
+- name: Check if certificate was created
+  stat:
+    path: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"
+  register: cert_check
+
+- name: Debug certificate check result
+  debug:
+    var: cert_check
+
+- name: Deploy full HTTPS Nginx config
+  template:
+    src: nginx-https.conf.j2
+    dest: /etc/nginx/sites-available/default
+  when: cert_check.stat.exists
+  notify: Restart Nginx
+
+- name: Reload Nginx if certs are present
+  service:
+    name: nginx
+    state: reloaded
+  when: cert_check.stat.exists

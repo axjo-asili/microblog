@@ -1,6 +1,8 @@
 ---
 instances:
-    - name: appserver
+    - name: appserver1
+      type: appserver
+    - name: appserver2
       type: appserver
     - name: database
       type: database

@@ -7,7 +7,6 @@ COPY app app
 COPY migrations migrations
 COPY requirements requirements
 COPY requirements.txt microblog.py boot.sh ./
-COPY scripts scripts
 
 RUN export DOCKER_BUILDKIT=1 && export COMPOSE_DOCKER_CLI_BUILD=1
 

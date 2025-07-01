@@ -3,15 +3,23 @@
 ansible_python_interpreter: "python3"
 
 region: northeurope
-resource_group: "DIDA-AHAI22-DV1673-H24-LP2"
+resource_group: "dida-ahai22-dv1673-h24-lp2"
 domain_name: "ahmadasili.tech"
 
 admin_email: "ahai22@student.bth.se"
 
+all_certbot_domains:
+  - "{{ domain_name }}"
+  - "www.{{ domain_name }}"
+  - "appserver1.{{ domain_name }}"
+  - "appserver2.{{ domain_name }}"
+
 vmtags:
     StudentId: "ahai22"
 
-pub_ssh_key_location: '~/.ssh/microblog_azure.pub'
+pub_ssh_key_location:
+  - files/ssh_keys/asili.pub
+  - files/ssh_keys/axio.pub
 
 
 server_user: "deploy"

@@ -1,0 +1,15 @@
+server {
+  listen 80;
+  server_name {{ all_certbot_domains | join(' ') }};
+
+  location ^~ /.well-known/acme-challenge/ {
+    alias /var/www/certbot/.well-known/acme-challenge/;
+    default_type "text/plain";
+    try_files $uri =404;
+  }
+
+  location / {
+    return 200 "ACME challenge ready.\n";
+    add_header Content-Type text/plain;
+  }
+}

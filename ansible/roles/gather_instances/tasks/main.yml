@@ -16,8 +16,6 @@
 -   name: add instance to hosts
     add_host:
         name: "{{ item.tags.PublicIP }}"
-        # ansible_user: deploy
-        # ansible_ssh_private_key_file: ~/.ssh/microblog_azure
         groups:
         - "{{ item.name[0:-3] }}" # instance name from provision_instances/vars/main.yml
         - "{{ item.tags.Type }}" # instance type from provision_instances/vars/main.yml
@@ -29,7 +27,27 @@
     when: item.tags.PublicIP is defined and item.power_state == "running"
 
 
+-   name: Display all groups
+    debug:
+        msg: "All groups: {{ groups.keys() | list }}"
+
+
+
 
 -   name: Display all variables/facts known for a host
     debug:
         var: hostvars
+
+- name: Initialize domain list with base domain
+  set_fact:
+    all_certbot_domains: ["{{ domain_name }}"]
+
+- name: Add appserver subdomains to certbot domain list
+  set_fact:
+    all_certbot_domains: "{{ all_certbot_domains + ['appserver' ~ item ~ '.' ~ domain_name] }}"
+  with_sequence: start=1 end={{ groups['appserver'] | length }}
+  when: groups['appserver'] is defined and groups['appserver'] | length > 0
+
+- name: Show all certbot domains
+  debug:
+    var: all_certbot_domains

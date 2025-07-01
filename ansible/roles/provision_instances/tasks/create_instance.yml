@@ -39,6 +39,17 @@
         loop_var: relative_name
     delegate_to: 127.0.0.1
 
+-   name: Create DNS A record for VM
+    azure_rm_dnsrecordset:
+        resource_group: "{{ resource_group }}"
+        zone_name: "{{ domain_name }}"
+        relative_name: "{{ iname }}"
+        record_type: A
+        time_to_live: 300
+        records:
+        - entry: "{{ hostvars['loadbalancer']['output_ip_address'].state.ip_address }}"
+        state: present
+    delegate_to: localhost
 
 
 -   name: Create VM
@@ -49,7 +60,7 @@
         ssh_password_enabled: false
         ssh_public_keys:
             - path: "/home/{{ root_user }}/.ssh/authorized_keys"
-              key_data: "{{ lookup('file', pub_ssh_key_location) }}"
+              key_data: "{{ lookup('file', pub_ssh_key_location[0]) }}"
         vm_size: Standard_B1s
         network_interfaces: "{{ iname }}-NIC"
         managed_disk_type: Standard_LRS
@@ -63,3 +74,4 @@
             StudentId: "{{ vmtags.StudentId }}"
             Type: "{{ itype }}"
             PublicIP: "{{ output_ip_address.state.ip_address }}"
+            
