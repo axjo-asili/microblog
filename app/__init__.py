@@ -32,6 +32,7 @@ def create_app(config_class=ProdConfig):
     """
     app = Flask(__name__)
     app.config.from_object(config_class)
+    app.version = os.environ.get('APP_VERSION', '1.0.0')
 
     db.init_app(app)
     migrate.init_app(app, db)

@@ -21,7 +21,13 @@ def before_request():
         current_app.logger.debug(f"{current_user} is authenticated")
         db.session.commit()
 
-
+@bp.route('/version')
+@login_required
+def version():
+    """
+    Route for version
+    """
+    return f"App version: {current_app.version}\n"
 
 @bp.route('/', methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])

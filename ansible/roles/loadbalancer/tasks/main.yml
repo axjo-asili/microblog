@@ -1,14 +1,4 @@
 ---
-- name: Uninstall pip versions of certbot and related libraries
-  pip:
-    name:
-      - certbot
-      - certbot-nginx
-      - urllib3
-      - requests_toolbelt
-    state: absent
-    executable: pip3
-
 - name: Ensure Nginx is installed
   apt:
     name: nginx
@@ -53,7 +43,7 @@
 - name: Run Certbot to obtain certs
   command: >
     certbot certonly --webroot -w /var/www/certbot
-    --email {{ admin_email }} --agree-tos --non-interactive
+    --email {{ admin_email }} --agree-tos --non-interactive --staging
     {% for domain in all_certbot_domains %} -d {{ domain }}{% endfor %}
   register: certbot_result
   failed_when: certbot_result.rc != 0 and 'Certificate not yet due for renewal' not in certbot_result.stdout

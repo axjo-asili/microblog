@@ -66,9 +66,9 @@
         managed_disk_type: Standard_LRS
         os_disk_size_gb: 30
         image:
-            offer: Debian-10
+            offer: Debian-11
             publisher: Debian
-            sku: 10
+            sku: 11
             version: latest
         tags:
             StudentId: "{{ vmtags.StudentId }}"

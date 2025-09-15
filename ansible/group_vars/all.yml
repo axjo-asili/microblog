@@ -5,6 +5,7 @@ ansible_python_interpreter: "python3"
 region: northeurope
 resource_group: "dida-ahai22-dv1673-h24-lp2"
 domain_name: "ahmadasili.tech"
+app_version: "latest"
 
 admin_email: "ahai22@student.bth.se"
 
@@ -19,7 +20,7 @@ vmtags:
 
 pub_ssh_key_location:
   - files/ssh_keys/asili.pub
-  - files/ssh_keys/axio.pub
+  - files/ssh_keys/axjo.pub
 
 
 server_user: "deploy"
@@ -32,3 +33,25 @@ secret_key: its_a_secret
 mysql_user: microblog
 mysql_password: heejheeej
 mysql_db: microblog
+
+# VM Configuration with static IPs
+vm_configs:
+  loadbalancer:
+    name: "loadbalancer-vm"
+    size: "Standard_B1s"
+    static_ip_name: "loadbalancer-static-ip"
+    
+  appserver1:
+    name: "appserver1-vm"
+    size: "Standard_B2s"
+    static_ip_name: "appserver1-static-ip"
+    
+  appserver2:
+    name: "appserver2-vm"
+    size: "Standard_B2s"
+    static_ip_name: "appserver2-static-ip"
+    
+  database:
+    name: "database-vm"
+    size: "Standard_B2s"
+    static_ip_name: "database-static-ip"

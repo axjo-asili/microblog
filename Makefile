@@ -77,7 +77,7 @@ help:
 .PHONY: add-ssh
 add-ssh:
 	eval `ssh-agent -s`
-	ssh-add ~/.ssh/microblog_azure
+	ssh-add ~/.ssh/azure
 
 
 

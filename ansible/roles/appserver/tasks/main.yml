@@ -8,10 +8,11 @@
 - name: Run microblog app container
   community.docker.docker_container:
     name: microblog-server
-    image: axjo21/microblog-prod:latest
+    image: "axjo21/microblog-prod:{{ app_version | default('latest') }}"
     env:
       SECRET_KEY: "{{ secret_key }}"
       DATABASE_URL: "mysql+pymysql://{{ mysql_user }}:{{ mysql_password }}@{{ groups['database'][0] }}/{{ mysql_db }}"
+      APP_VERSION: "{{ app_version | default('latest') }}"
     ports:
       - "8000:5000"
     restart_policy: always

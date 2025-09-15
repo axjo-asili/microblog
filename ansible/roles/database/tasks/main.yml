@@ -4,11 +4,11 @@
     state: absent
   ignore_errors: true
 
-- name: Remove MySQL Docker volume (clean start)
-  community.docker.docker_volume:
-    name: mysql_data
-    state: absent
-  ignore_errors: true  # In case it doesn't exist
+# - name: Remove MySQL Docker volume (clean start)
+#   community.docker.docker_volume:
+#     name: mysql_data
+#     state: absent
+#   ignore_errors: true  # In case it doesn't exist
 
 - name: Create fresh MySQL volume
   community.docker.docker_volume:
